@@ -3,19 +3,19 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 郭学东的个人博客
+title: heimxd
 subtitle:
-description: 前端小白的成长历程
-keywords: "博客, 前端, 郭学东"
-author: 郭学东
-language: zh-Hans
+description: 前端小白的学习笔记
+keywords: "博客, 前端, 日志, 嘿毛小豆, 郭学东"
+author: 嘿毛小豆
+language: zh-CN
 timezone: 
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://gxd2015.github.io/blog
-root: /blog/
-permalink: :year/:month/:day/:title/
+url: https://heimxd.github.io
+root: /
+permalink: :year/:month/:title/
 permalink_defaults:
 
 # Directory
@@ -79,5 +79,5 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:gxd163/blog.git
+  repo: git@github.com:heimxd/heimxd.github.io.git
   branch: master
