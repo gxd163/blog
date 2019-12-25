@@ -1,0 +1,100 @@
+---
+title: 关于var，let，const的一些知识点
+date: 2019-12-25 18:47:53
+categories:
+- 前端
+tags:
+- es6
+- 变量声明
+---
+
+# 关于var,let,const一些知识点
+
+<a name="4XezX"></a>
+## 用法
+- var 语句声明一个变量，并可选地将其初始化为一个值。
+- let 语句声明一个块级作用域的本地变量，并且可选的将其初始化为一个值，不可重新声明。
+- const 语句声明一个块级作用域的本地变量，并且初始化的值是必要的，并且不能重新声明。常量的值不能通过重新赋值来改变。
+<a name="HIQzF"></a>
+## 执行上下文
+<a name="DEFss"></a>
+### 执行上下文分类
+
+- 全局执行上下文
+- 函数执行上下文
+- eval执行上下文
+<a name="pwhuM"></a>
+### 浏览器解释代码流程
+浏览器在解释代码的时候，分为2个阶段。第一个阶段为编译阶段，第二个为执行阶段。编译阶段，浏览器会生成两部分内容：执行上下文（Execution context）和可执行代码。执行上下文以栈的形式存储，首先将全局上下文压入栈。遇到函数的时候，再进行编译和执行2个阶段，编译阶段将函数执行上下文压如函数上下文栈，也就是函数调用栈。等函数执行完后，将该函数执行上下文弹出执行上下文栈。
+<a name="0zXZK"></a>
+### 执行上下文中的内容
+
+- 变量环境
+  - 存放var声明的变量，并初始化为undefinded。
+  - 存放function 声明的变量，并初始化为函数本身引用
+- 词法环境
+  - 存放let, const, class声明的变量
+- this
+- outer，指向父级执行上下文的引用。浏览器也是通过该属性实现作用域链的机制。
+<a name="XwaeJ"></a>
+## 变量提升
+var, let, const 在声明变量的时候，都会有变量提升。浏览器在编译阶段初始化变量的行为，就是变量提升。
+<a name="vj8b1"></a>
+## 块级作用域
+es6以前，作用域分为2种，全局作用域和函数作用域。es6新增了块级作用域。
+<a name="UwpAG"></a>
+### 浏览器是如何实现块级作用域的
+let,const,class声明的变量会存入执行上下文的词法环境。词法环境内部也维护一个栈结构，每遇到一个块结构，就会将该块内的变量或者常量作为一个块，压如词法环境栈，等该块级代码执行完后，把该块从栈中弹出。
+<a name="8N1aI"></a>
+### 查找变量顺序
+浏览器在查找一个变量的时候，首先会在当前执行上下文中的词法环境中查找，没找到再从变量环境中查找。还没有找到就通过执行上下文的outer属性找到父级执行上下文，一直找到全局执行上下文。
+<a name="Ron9K"></a>
+## 暂存死区
+通过let, const, class 声明的变量或者常量，在编译阶段的时候，只声明，不初始化，直到代码执行到该声明的代码片段时候，才初始化。所以从代码块顶部到初始化这段区间，都是暂存死区。在暂存死区或者变量或者常量的时候，浏览器都会抛出错误。、
+
+<a name="VQc53"></a>
+## 扩展
+
+- typeof 可以判断一个变量是否被声明，但如果一个是let，const，class声明，也会抛出暂存死区的错误
+- switch case语句中，如果在不同的case中用let声明相同变量，会抛出重复声明的错误，通过case:{}增加块级作用域来解决。
+- 可以通过块级作用域来模仿私有成员，而不是闭包的形式
+
+```javascript
+      var Thing;
+
+      {
+        let privateScope = new WeakMap();
+        let counter = 0;
+
+        Thing = function() {
+          this.someProperty = 'foo';
+
+          privateScope.set(this, {
+            hidden: ++counter,
+          });
+        };
+
+        Thing.prototype.showPublic = function() {
+          return this.someProperty;
+        };
+
+        Thing.prototype.showPrivate = function() {
+          return privateScope.get(this).hidden;
+        };
+      }
+
+      console.log(typeof privateScope);
+      // "undefined"
+
+      var thing = new Thing();
+
+      console.log(thing);
+      // Thing {someProperty: "foo"}
+
+      thing.showPublic();
+      // "foo"
+
+      thing.showPrivate();
+      // 1
+```
+
