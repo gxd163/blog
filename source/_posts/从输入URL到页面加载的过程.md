@@ -6,18 +6,22 @@ tags:
 ---
 
 ## 多进程的浏览器架构
+
 - 浏览器进程。主要负责界面显示、用户交互、子进程管理，同时提供存储等功能
 - 渲染进程。核心任务是将 HTML、CSS 和 JavaScript 转换为用户可以与之交互的网页，排版引擎 Blink 和 JavaScript 引擎 V8 都是运行在该进程中，默认情况下，Chrome 会为每个 Tab 标签创建一个渲染进程。出于安全考虑，渲染进程都是运行在沙箱模式下。
 - GPU 进程。其实，Chrome 刚开始发布的时候是没有 GPU 进程的。而 GPU 的使用初衷是为了实现 3D CSS 的效果，只是随后网页、Chrome 的 UI 界面都选择采用 GPU 来绘制，这使得 GPU 成为浏览器普遍的需求。最后，Chrome 在其多进程架构上也引入了 GPU 进程
 - 网络进程。主要负责页面的网络资源加载，之前是作为一个模块运行在浏览器进程里面的，直至最近才独立出来，成为一个单独的进程。
 - 插件进程。主要是负责插件的运行，因插件易崩溃，所以需要通过插件进程来隔离，以保证插件进程崩溃不会对浏览器和页面造成影响。
+  
 ## 主要流程
 
 1. 卸载当前页面并发起网络请求
 1. 接收响应数据
 1. 解析数据
 1. 渲染页面
+   
 ## 细节整理
+
 ### 导航
 
 - 首先，浏览器进程接收到用户输入的 URL 请求，判断是否为URL，是就补充完整URL，不是就搜索引擎。
@@ -28,6 +32,7 @@ tags:
 - 渲染进程接收到“提交导航”的消息之后，便开始准备接收 HTML 数据，接收数据的方式是直接和网络进程建立数据管道；
 - 最后渲染进程会向浏览器进程“确认提交”，这是告诉浏览器进程：“已经准备好接受和解析页面数据了”。
 - 浏览器进程接收到渲染进程“提交文档”的消息之后，便开始移除之前旧的文档，然后更新浏览器进程中的页面状态。
+  
 ### 网络
 
 - 首先，网络进程会查找本地缓存是否缓存了该资源。如果有缓存资源，那么直接返回资源给浏览器进程；如果在缓存中没有查找到资源，那么直接进入网络请求流程。如果是重定向，就重新发起新的网络请求。
@@ -36,6 +41,7 @@ tags:
 - 发送请求request
 - 接收response header 是否重定向
 - 接收 reponse
+  
 ### 解析
 
 - 字节流（bytes
@@ -44,6 +50,7 @@ tags:
 - 生成DOM
 - 补充：javascript脚本阻塞dom解析，css阻塞JavaScript脚本解析。一般情况下，css脚本不阻塞dom解析，但css后如果有js脚本，会阻塞dom解析。
 - 补充：解析器维护了一个token栈结构，如果压入到栈中的是 StartTag Token，HTML 解析器会为该 Token 创建一个 DOM 节点，然后将该节点加入到 DOM 树中，它的父节点就是栈中相邻的那个元素生成的节点。如果分词器解析出来是文本 Token，那么会生成一个文本节点，然后将该节点加入到 DOM 树中，文本 Token 是不需要压入到栈中，它的父节点就是当前栈顶 Token 所对应的 DOM 节点。如果分词器解析出来的是 EndTag 标签，比如是 EndTag div，HTML 解析器会查看 Token 栈顶的元素是否是 StarTag div，如果是，就将 StartTag div 从栈中弹出，表示该 div 元素解析完成。
+  
 ### 渲染
 
 - 渲染进程将 HTML 内容转换为能够读懂的 DOM 树结构。（DOM）
@@ -54,8 +61,11 @@ tags:
 - 合成线程将图层分成图块，并在光栅化线程池中将图块转换成位图，生成位图由GPU来完成。（tiles -> raster）
 - 合成线程发送绘制图块命令 DrawQuad 给浏览器进程。
 - 浏览器进程根据 DrawQuad 消息生成页面，并显示到显示器上。
+  
 ## 其他
+
 ### DNS解析
+
 #### 域名的层级
 
 - 根域名。总共13个根域名服务器，(a-m).root-servers.net.
@@ -64,6 +74,7 @@ tags:
 - 主机名
 
 主机名.次级域名.顶级域名.根域名，host.sld.tld.root
+
 #### 查找过程
 
 - 浏览器查找dns缓存。如果没有，调用操作系统再gethostbyname函数
@@ -72,6 +83,7 @@ tags:
 - 补充：一般操作系统，路由器，DNS服务器都会缓存hosts
 
  ![v2-30bdd430e5066476a87f977009f990cf_hd.jpg](https://cdn.nlark.com/yuque/0/2020/jpeg/580971/1579073378054-9355a14b-5d79-40ca-b96f-d6f446988068.jpeg#align=left&display=inline&height=621&name=v2-30bdd430e5066476a87f977009f990cf_hd.jpg&originHeight=954&originWidth=720&size=60109&status=done&style=none&width=469)
+
 #### DNS记录类型
 
 - A：将域名指向IPV4的地址。
@@ -79,20 +91,26 @@ tags:
 - AAAA：将域名指向IPV6的地址
 - NS：将子域名指定其他DNS服务器解析。
 - MX：将域名邮件服务器地址。
+  
 ### TCP连接
+
 #### 三次握手
+
 ![3.png](https://cdn.nlark.com/yuque/0/2020/png/580971/1579080750966-a4cdd7ed-7f91-4460-ae88-42d0a8f349ee.png#align=left&display=inline&height=396&name=3.png&originHeight=450&originWidth=656&size=7034&status=done&style=none&width=577)
 
 - 第一次握手： 建立连接。客户端发送连接请求报文段，将SYN位置为1，Sequence Number为x；然后，客户端进入SYN_SEND状态，等待服务器的确认；
 - 第二次握手： 服务器收到SYN报文段。服务器收到客户端的SYN报文段，需要对这个SYN报文段进行确认，设置Acknowledgment Number为x+1(Sequence Number+1)；同时，自己自己还要发送SYN请求信息，将SYN位置为1，Sequence Number为y；服务器端将上述所有信息放到一个报文段（即SYN+ACK报文段）中，一并发送给客户端，此时服务器进入SYN_RECV状态；
 - 第三次握手： 客户端收到服务器的SYN+ACK报文段。然后将Acknowledgment Number设置为y+1，向服务器发送ACK报文段，这个报文段发送完毕以后，客户端和服务器端都进入ESTABLISHED状态，完成TCP三次握手。
+  
 #### 四次挥手
+
 ![4.png](https://cdn.nlark.com/yuque/0/2020/png/580971/1579080779428-80c7b4f9-2ed3-40ef-bcce-e762357c25c7.png#align=left&display=inline&height=354&name=4.png&originHeight=467&originWidth=691&size=81022&status=done&style=none&width=524)
 
 - 第一次分手： 主机1（可以使客户端，也可以是服务器端），设置Sequence Number，向主机2发送一个FIN报文段；此时，主机1进入FIN_WAIT_1状态；这表示主机1没有数据要发送给主机2了；
 - 第二次分手： 主机2收到了主机1发送的FIN报文段，向主机1回一个ACK报文段，Acknowledgment Number为Sequence Number加1；主机1进入FIN_WAIT_2状态；主机2告诉主机1，我“同意”你的关闭请求；
 - 第三次分手： 主机2向主机1发送FIN报文段，请求关闭连接，同时主机2进入LAST_ACK状态；
 - 第四次分手： 主机1收到主机2发送的FIN报文段，向主机2发送ACK报文段，然后主机1进入TIME_WAIT状态；主机2收到主机1的ACK报文段以后，就关闭连接；此时，主机1等待2MSL后依然没有收到回复，则证明Server端已正常关闭，那好，主机1也可以关闭连接了。
+  
 ## 参考
 
 - [关于 TCP/IP，必知必会的十个问题](https://juejin.im/post/598ba1d06fb9a03c4d6464ab)
