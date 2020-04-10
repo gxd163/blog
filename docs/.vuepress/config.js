@@ -1,63 +1,71 @@
 module.exports = {
-  title: "heimxd重学前端",
-  description: "heimxd的前端学习笔记",
+  title: 'heimxd学习笔记',
+  description: 'heimxd的前端学习笔记',
   themeConfig: {
-    repo: "heimxd/blog",
-    lastUpdated: "Last Updated",
+    repo: 'heimxd/blog',
+    lastUpdated: 'Last Updated',
     nav: [
-      { text: "博客", link: "/blog/" },
-      { text: "面试题", link: "/interview/" }
+      { text: '笔记', link: '/blog/' },
+      { text: '面试题', link: '/interview/' },
+      { text: 'LeetCode', link: '/leetcode/' },
     ],
     sidebar: {
-      "/blog/": [
+      '/blog/': [
         {
-          title: "浏览器原理",
+          title: '浏览器原理',
           collapsable: false,
-          children: ["从输入URL到页面加载的过程"]
+          children: ['从输入URL到页面加载的过程'],
         },
         {
-          title: "HTML",
+          title: 'HTML',
           collapsable: false,
-          children: []
+          children: [],
         },
         {
-          title: "CSS",
+          title: 'CSS',
           collapsable: false,
-          children: []
+          children: [],
         },
         {
-          title: "JavaScript",
+          title: 'JavaScript',
           collapsable: false,
-          children: ["变量声明总结"]
+          children: ['变量声明总结'],
         },
         {
-          title: "工程化",
+          title: '工程化',
           collapsable: false,
-          children: ["前端测试", "前端规范"]
+          children: ['前端测试', '前端规范'],
         },
         {
-          title: "计算机基础",
+          title: '计算机基础',
           collapsable: false,
-          children: []
+          children: [],
         },
         {
-          title: "其他",
+          title: '其他',
           collapsable: false,
-          children: []
-        }
+          children: [],
+        },
       ],
-      "/interview/": [
+      '/interview/': [
         {
-          title: "手写源码系列",
+          title: '手写源码系列',
           collapsable: false,
-          children: []
+          children: [],
         },
         {
-          title: "其他",
+          title: '其他',
           collapsable: false,
-          children: []
-        }
-      ]
-    }
-  }
+          children: [],
+        },
+      ],
+      '/leetcode/': [
+        {
+          title: '全部',
+          collapsable: false,
+          children: [],
+        },
+      ],
+    },
+  },
 };
